@@ -47,7 +47,7 @@ def get_all_users(request: Request) -> HTMLResponse:
     return templates.TemplateResponse('users.html', {'request': request, 'users': users})
 
 @app.get('/user/{user_id}')
-def get_user(request: Request, user_id: int) -> HTMLResponse:
+async def get_user(request: Request, user_id: int) -> HTMLResponse:
     try:
         return templates.TemplateResponse('users.html', {'request': request, 'user': users[user_id-1]})
     except IndexError:
@@ -55,7 +55,7 @@ def get_user(request: Request, user_id: int) -> HTMLResponse:
 
 
 @app.post('/user')
-def create_new_user(user: User) -> str:
+async def create_new_user(user: User) -> str:
     if len(users) == 0:
         user.id = len(users)+1
     else:
@@ -68,7 +68,7 @@ def create_new_user(user: User) -> str:
         raise HTTPException(status_code=422, detail=f'Введены неверные данные!')
 
 @app.put('/users/{user_id}/{username}/{age}')
-def edit_user(user_id: int, user: str, age: int) -> str:
+async def edit_user(user_id: int, user: str, age: int) -> str:
     try:
         edit_user = users[user_id-1]
         edit_user.username, edit_user.age = user, age
@@ -78,7 +78,7 @@ def edit_user(user_id: int, user: str, age: int) -> str:
         raise HTTPException(status_code=404, detail=f'Пользователь с ID={user_id} не найден!')
 
 @app.delete('/users/{user_id}')
-def delete_user(user_id: int) -> str:
+async def delete_user(user_id: int) -> str:
     try:
         users.pop(user_id-1)
         return f'Пользователь с ID={user_id} удалён.'
